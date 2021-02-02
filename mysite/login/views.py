@@ -3,13 +3,6 @@ from . import forms, models
 import pymongo
 
 
-def hello(request):
-    context = {'hello': 'Hello world'}
-    return render(request,
-                  'hello.html',
-                  context)
-
-
 def register(request):
     if request.method == "POST":
         register_form = forms.RegisterUserForm(request.POST)
@@ -59,7 +52,6 @@ def login(request):
                 if db_user is None:
                     message = 'User does not exist!'
                 elif db_user['password'] == password:
-                    print('match')
                     request.session['is_login'] = True
                     request.session['user_name'] = username
                     return redirect("/index/")
