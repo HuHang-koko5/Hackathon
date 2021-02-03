@@ -12,10 +12,10 @@
 		<div class="col-md-12 column">
 			<div class="jumbotron">
 				<h1>
-					地震评估系统
+					Online study website
 				</h1>
 				<p>
-					基于社交网络舆情的地震烈度评估系统
+					we generate optimized contents for only you!
 				</p>
 				<p>
 					<a class="btn btn-primary btn-large" href="/admin/">Admin</a>
@@ -24,7 +24,7 @@
                     <h3>Hello,{{ request.session.user_name }}! welcome back</h3>
                 {% else %}
                     <h3>Please Login first</h3>
-                    <a href="user/login" class="">Login</a>
+                    <a href="/user/login" class="">Enter to Login</a>
                 {% endif %}
                 {% if message %}
                 <div class="alert alert-warning">{{ message }}</div>
@@ -35,22 +35,36 @@
     {% if request.session.is_login %}
 	<div class="row clearfix">
 		<div class="col-md-3 column">
-            <h4>浏览微博数据</h4>
-            <a class="btn btn-primary btn-large" href="/tweets/">进入</a>
+            <h4>view my bookmark</h4>
+            <a class="btn btn-primary btn-large" href="/reco/bookmark">enter</a>
 		</div>
 		<div class="col-md-3 column">
-            <h4>时间分布</h4>
-            <a class="btn btn-primary btn-large" href="/timebar/">进入</a>
+            <h4>learn one</h4>
+            <a class="btn btn-primary btn-large" href="/reco/study/2/1">enter</a>
 		</div>
 		<div class="col-md-3 column">
-            <h4>时空热力图</h4>
-            <a class="btn btn-primary btn-large" href="/geo/">进入</a>
-		</div>
-        <div class="col-md-3 column">
-            <h4>整体报告</h4>
-            <a class="btn btn-primary btn-large" href="/si_list/">进入</a>
+            <h4>pick one for me</h4>
+			<ul class="list-inline">
+				<div>
+					<li>
+						<h5>label 1</h5>
+						<a class="btn btn-primary btn-large" href="/reco/study/1">pick one</a>
+					</li>
+					<li>
+						<h5>label 2</h5>
+						<a class="btn btn-primary btn-large" href="/reco/study/2">pick one</a>
+					</li>
+					<li>
+						<h5>label 3</h5>
+						<a class="btn btn-primary btn-large" href="/reco/study/3">pick one</a>
+					</li>
+
+				</div>
+			</ul>
+            <a class="btn btn-primary btn-large" href="/reco/study">进入</a>
 		</div>
 	</div>
     {% endif %}
 </div>
+
 {% endblock %}

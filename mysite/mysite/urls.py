@@ -17,11 +17,11 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url, include
 from . import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('login.urls')),
     path('reco/', include('recommendation.urls')),
     url(r'^$', views.index),
     path('index/', views.index),
-    url(r'^captcha', include('captcha.urls')),
 ]
