@@ -9,11 +9,15 @@ File Structure:
 
     -- register
 
-  --recommendation
+  --recommendation app
   
     -- study: Start study a new label with random pick url
     
     -- studyone: Start study with a specified url
+    
+    -- study next: pick next url for user from recommendation collection
+    
+    -- show_bookmark: list users's bookmarks with time order(limit to 5)
 
     -- add bookmark
 
