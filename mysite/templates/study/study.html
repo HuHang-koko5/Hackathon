@@ -40,7 +40,25 @@
                         </ul>
                     </div>
                 </div>
-                <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="80%" color=#987cb9 SIZE=10>
+                <div>
+                    <form class="add_book" action="/reco/bookmark/add/" method="POST">
+                        <input type="hidden" name="url_title" value="{{ item.title }}">
+                        <input type="hidden" name="url_id" value="{{ item.url_id }}">
+                        <input type="hidden" name="url_label" value="{{ item.label }}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary pull-right">Add bookmark</button>
+                    </form>
+                </div>
+                <div>
+                    <form class="get_next" action="/reco/next/" method="GET">
+                        <input type="hidden" name="url_id" value="{{ item.url_id }}">
+                        <input type="hidden" name="url_label" value="{{item.label}}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary pull-right">Go next</button>
+                    </form>
+                </div>
+                <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
+
                 {% endfor %}
             </div>
         </div>

@@ -66,6 +66,44 @@ def studyone(request, label, url_id):
             return render(request, 'study/study.html', {'items': [nitem]})
 
 
+def studynext(request):
+    if not request.session.get('is_login', None):
+        message = 'please login first!'
+        messages.error(request, message)
+        return redirect('/index/')
+    else:
+        if request.method == 'GET':
+            url_id = request.GET.get('url_id')
+            url_label = request.GET.get('url_label')
+            client = pymongo.MongoClient('localhost', 27017)
+            db = client['Django']
+            col = db['reco']
+            item = col.find({'prev': url_id}).sort('value', pymongo.DESCENDING).limit(1)
+
+            if item is not None:
+                item = item[0]
+                itemlist = []
+                uid = item['next']
+                url_col = db['urls']
+                item = url_col.find_one({'url_id': uid})
+                print('next:', item)
+                nitem = {'title': item['title'],
+                         'url': item['url'],
+                         'url_id': item['url_id'],
+                         'type_tag': url_type[item['type']],
+                         'type': item['type'],
+                         'label_tag': label_type[item['label']],
+                         'label': item['label'],
+                         'site_type': site_type[item['site_type']]}
+                itemlist.append(nitem)
+                return render(request, 'study/study.html', {'items': itemlist})
+            else:
+                message = "Sorry,we are unable to find one now, come back later!"
+                messages.error(request, message)
+                return redirect('/reco/study/{}/{}'.format(url_label,url_id))
+
+
+
 def show_bookmark(request):
     if not request.session.get('is_login', None):
         message = 'please login first!'
@@ -91,27 +129,37 @@ def show_bookmark(request):
         return render(request, 'bookmark/bookmark.html', {'items': itemlist})
 
 
-def add_bookmark(request, url_id):
+def add_bookmark(request):
     if not request.session.get('is_login', None):
         message = 'please login first!'
         return redirect('/index/', message=message)
     else:
-        if request.method == 'GET':
+        if request.method == 'POST':
             request.session['add_from'] = request.META.get('HTTP_REFERER', '/')
             user_name = request.session['user_name']
+            url_title = request.POST.get('url_title')
+            url_id = request.POST.get('url_id')
+            url_label = request.POST.get('url_label')
             client = pymongo.MongoClient('localhost', 27017)
+            print(user_name, '  ', url_id, ' ', url_title)
             db = client['Django']
-            col = db['bookmarks']
+            col = db['bookmark']
             item = col.find_one({'url_id': url_id,
-                                 'user_name': user_name})
+                                 'title': url_title,
+                                 'user_id': user_name})
             if item is None:
-                col.insert({'url_id': url_id, 'user_name': user_name, 'time': datetime.now()})
+                print('new one')
+                col.insert({'title': url_title, 'url_id': url_id, 'user_id': user_name, 'time': datetime.now()})
                 message = 'Bookmark add successfully!'
                 messages.success(request, message)
             else:
+                print('exist one')
                 message = 'This has already in your book mark!'
                 messages.error(request, message)
-            redirect('/study/' + url_id + '/', message=message)
+            return redirect('/reco/study/' + url_label + '/' + url_id + '/', message=message)
+        else:
+            message = 'Invalid request!'
+            return redirect('/index/', message=message)
 
 
 def remove_bookmark(request, url_id):
@@ -124,7 +172,7 @@ def remove_bookmark(request, url_id):
             user_name = request.session['user_name']
             client = pymongo.MongoClient('localhost', 27017)
             db = client['Django']
-            col = db['bookmarks']
+            col = db['bookmark']
             item = col.find_one({'url_id': url_id,
                                  'user_name': user_name})
             if item is None:
