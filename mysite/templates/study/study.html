@@ -73,19 +73,31 @@
                     {% endfor%}
                     </table>
                 </div>
-
-                <div class="row cl">
                 <h5>prev: {{prev}}</h5>
-                <div>
-                    <form class="add_book" action="/reco/bookmark/add/" method="POST">
-                        <input type="hidden" name="url_title" value="{{ item.title }}">
-                        <input type="hidden" name="url_id" value="{{ item.url_id }}">
-                        <input type="hidden" name="prev_id" value="{{ prev }}">
-                        <input type="hidden" name="url_label" value="{{ item.label }}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary pull-right">Add bookmark</button>
-                    </form>
+                <div class="row cl">
+                    {% if prev%}
+                    <div>
+                        <form class="like_this" action="/reco/like/" method="POST">
+                            <input type="hidden" name="url_id" value="{{ item.url_id }}">
+                            <input type="hidden" name="prev_id" value="{{ prev }}">
+                            <input type="hidden" name="url_label" value="{{ item.label }}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary pull-right">いいね！</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <form class="add_book" action="/reco/bookmark/add/" method="POST">
+                            <input type="hidden" name="url_title" value="{{ item.title }}">
+                            <input type="hidden" name="url_id" value="{{ item.url_id }}">
+                            <input type="hidden" name="prev_id" value="{{ prev }}">
+                            <input type="hidden" name="url_label" value="{{ item.label }}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary pull-right">ブックマークに追加</button>
+                        </form>
+                    </div>
                 </div>
+
 
 
                 <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
