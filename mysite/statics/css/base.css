@@ -1,0 +1,7 @@
+.navbar-brand {
+  background: url("logo_book.jpg") no-repeat left center;
+  background-size: contain;
+  height: 50px;
+  width: 250px;
+}
+

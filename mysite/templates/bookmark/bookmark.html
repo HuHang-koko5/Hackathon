@@ -35,13 +35,24 @@
                     </div>
                     <div class="col-md-4 column">
                         <ul class="list-inline">
-                            <div>
-                                <li class="lead">
-                                    <h5>source from</h5>
-                                    Site: {{item.site_type}}
-                                </li>
-                            </div>
-
+                            <li class="lead">
+                                <p>
+                                <h5>source from</h5>
+                                Site: {{item.site_tag}}
+                                </p>
+                            </li>
+                            <li>
+                                <a href="/reco/study/{{item.label}}/{{item.url_id}}" method="GET">
+                                    <button>Go</button>
+                                </a>
+                            </li>
+                            <li>
+                                <form class="get_next" action="/reco/bookmark/remove" method="GET">
+                                    <input type="hidden" name="url_id" value="{{ item.url_id }}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary pull-right">削除</button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </div>

@@ -3,12 +3,152 @@
 {% block title %}Study{% endblock %}
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
 {% endblock %}
 
 {% block content %}
+
+    <!-- current content -->
     <div class="container">
         <div class="row clearfix">
-            <h2 class="text-center">Studying...</h2>
+            <div class="col-md-12 column">
+                {% if items.site_type == 0 %}
+                <div class="jumbotron bg-warning ">
+                {% elif items.site_type == 1 %}
+                <div class="jumbotron bg-danger">
+                {% elif items.site_type == 2 %}
+                <div class="jumbotron bg-secondary">
+                {% endif %}
+
+                    <div class="text-center">
+                        
+                        <!-- <div class="starter templete"> -->
+                        <div>
+                            <h1>
+                                <a class="btn btn-outline-dark" href={{items.url}}><h1>{{items.title}}</h1></a>
+                            </h1>
+                            <hr class="my-4">
+                        </div>
+
+                        <div class="btn-toolbar">
+                        <div class="btn-group">
+                        
+                        <!-- add bookmark -->
+                        <form class="add_book" action="/reco/bookmark/add/" method="POST">
+                            <input type="hidden" name="url_title" value="{{ items.title }}">
+                            <input type="hidden" name="url_id" value="{{ items.url_id }}">
+                            <input type="hidden" name="prev_id" value="{{ prev }}">
+                            <input type="hidden" name="url_label" value="{{ items.label }}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary pull-right">ブックマークに追加</button>
+                        </form>
+                    
+                        <!-- good button -->
+                        {% if prev %}
+                        <div>
+                            <form class="like_this" action="/reco/like/" method="POST">
+                                <input type="hidden" name="url_id" value="{{ items.url_id }}">
+                                <input type="hidden" name="prev_id" value="{{ prev }}">
+                                <input type="hidden" name="url_label" value="{{ items.label }}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary pull-right">いいね！</button>
+                            </form>
+                        </div>
+                        {% endif %}
+
+
+                        </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- next content -->
+    <div class="box_fusen">
+	<h4>next contents</h4>
+	</div>
+
+    <div class="container" style="padding: 10px;">
+        <div class="card-deck">
+            <div class="row">
+                {% for next in nexts %}
+                {% if next.type == 0 %}
+                <div class="card my-3" style="width: 10rem">
+                    <!--<div class="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-2" style="padding: 10px;">-->
+                        {% if next.site_type == 0 %}
+                        <div class="card-body bg-warning ">
+                            <img src="{% static 'images/Amazon_icon.jpg' %}" class="card-img-top" width="100%" height="100">
+                        {% elif next.site_type == 1 %}
+                        <div class="card-body bg-danger">
+                            <img src="{% static 'images/YouTube_icon.jpg' %}" class="card-img-top" width="100%" height="100">
+                        {% elif next.site_type == 2 %}
+                        <div class="card-body bg-secondary">
+                            <img src="{% static 'images/site_icon.jpg' %}" class="card-img-top" width="100%" height="100">
+                        {% endif %}
+
+                            <h5 class="card-title">{{ next.title }}</h5>
+
+                            <!-- Go next -->
+                            <div>
+                                <form class="get_next" action="/reco/study/{{next.label}}/{{next.url_id}}" method="GET">
+                                <input type="hidden" name="prev" value="{{ items.url_id }}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary pull-right">Go</button>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+    <!-- next content (advance) -->
+    <div class="box_fusen">
+        <h4>next contents (advance)</h4>
+        </div>
+    
+        <div class="container" style="padding: 10px;">
+            <div class="card-deck">
+                <div class="row">
+                    {% for next in nexts %}
+                    {% if next.type == 1 %}
+                    <div class="card my-3" style="width: 10rem">
+                        <!--<div class="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-2" style="padding: 10px;">-->
+                            {% if next.site_type == 0 %}
+                            <div class="card-body bg-warning ">
+                                <img src="{% static 'images/Amazon_icon.jpg' %}" class="card-img-top" width="100%" height="100">
+                            {% elif next.site_type == 1 %}
+                            <div class="card-body bg-danger">
+                                <img src="{% static 'images/YouTube_icon.jpg' %}" class="card-img-top" width="100%" height="100">
+                            {% elif next.site_type == 2 %}
+                            <div class="card-body bg-secondary">
+                                <img src="{% static 'images/site_icon.jpg' %}" class="card-img-top" width="100%" height="100">
+                            {% endif %}
+    
+                                <h5 class="card-title">{{ next.title }}</h5>
+    
+                                <!-- Go next -->
+                                <div>
+                                    <form class="get_next" action="/reco/study/{{next.label}}/{{next.url_id}}" method="GET">
+                                        <input type="hidden" name="prev" value="{{ items.url_id }}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary pull-right">Go</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>    
+
+        <!--
             <div class="col-md-12 column">
                 {% for item in items %}
                 <div class="row clearfix">
@@ -22,7 +162,7 @@
                              URL: {{ item.url }}
                         </p>
                         <p class="text-left">
-                             type:{{ item.value }}
+                             type:{{ item.type_tag }}
                         </p>
                         <p class="text-left">
                             label:{{item.label_tag}}
@@ -40,69 +180,27 @@
                         </ul>
                     </div>
                 </div>
-                <!--show next list-->
-                <h4>Nexts:</h4>
-                <div class="col-md-12 column">
-                    <table border="1">
-                    {% for next in nexts %}
-                    <tr>
-                        <td>
-                            <h4>
-                                title: {{ next.title}}
-                            </h4>
-                        </td>
-                        <td>
-                            <form class="get_next" action="/reco/study/{{next.label}}/{{next.url_id}}" method="GET">
-                                <input type="hidden" name="prev" value="{{ item.url_id }}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary pull-right">Go</button>
-                            </form>
-                        </td>
-                    <tr>
-                        <td>
-                            <p class="text-left">
-                                 推薦値:{{ next.value }}
-                            </p>
-                        </td>
-                        <td>
-                            <p class="text-left">
-                                label:{{next.label_tag}}
-                            </p>
-                        </td>
-                    </tr>
-                    {% endfor%}
-                    </table>
+                <div>
+                    <form class="add_book" action="/reco/bookmark/add/" method="POST">
+                        <input type="hidden" name="url_title" value="{{ item.title }}">
+                        <input type="hidden" name="url_id" value="{{ item.url_id }}">
+                        <input type="hidden" name="url_label" value="{{ item.label }}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary pull-right">Add bookmark</button>
+                    </form>
                 </div>
-                <h5>prev: {{prev}}</h5>
-                <div class="row cl">
-                    {% if prev%}
-                    <div>
-                        <form class="like_this" action="/reco/like/" method="POST">
-                            <input type="hidden" name="url_id" value="{{ item.url_id }}">
-                            <input type="hidden" name="prev_id" value="{{ prev }}">
-                            <input type="hidden" name="url_label" value="{{ item.label }}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary pull-right">いいね！</button>
-                        </form>
-                    </div>
-                    {% endif %}
-                    <div>
-                        <form class="add_book" action="/reco/bookmark/add/" method="POST">
-                            <input type="hidden" name="url_title" value="{{ item.title }}">
-                            <input type="hidden" name="url_id" value="{{ item.url_id }}">
-                            <input type="hidden" name="prev_id" value="{{ prev }}">
-                            <input type="hidden" name="url_label" value="{{ item.label }}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary pull-right">ブックマークに追加</button>
-                        </form>
-                    </div>
+                <div>
+                    <form class="get_next" action="/reco/next/" method="GET">
+                        <input type="hidden" name="url_id" value="{{ item.url_id }}">
+                        <input type="hidden" name="url_label" value="{{item.label}}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary pull-right">Go next</button>
+                    </form>
                 </div>
-
-
-
                 <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" width="100%" color=#987cb9 SIZE=10>
-                </div>
+
                 {% endfor %}
             </div>
-    </div>
+        -->
+
 {% endblock %}

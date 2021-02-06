@@ -9,12 +9,7 @@
     <title>{% block title %}base{% endblock %}</title>
 
     <!-- Bootstrap -->
-    <!--
     <link href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    -->
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
- 
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -22,9 +17,7 @@
       <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    {% block css %}
-      <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    {% endblock %}
+    {% block css %}{% endblock %}
   </head>
   <body>
     {% if messages %}
@@ -34,35 +27,28 @@
       {% endfor %}
     </script>
     {% endif %}
-    <!--<nav class="navbar navbar-default">-->
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav class="navbar navbar-default">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
-        
-        <div class="navbar-brand">
-          <!--
+        <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#my-nav" aria-expanded="false">
             <span class="sr-only">change navi bar</span>
           </button>
-          -->
-          <a class="navbar-brand" href="/index/">
-            <img src="{% static 'images/logo_book.jpg' %}" alt="logo" class="d-inline-block align-top" style="max-height:50px;">
-          </a>
+          <a class="navbar-brand" href="/index/">Online study</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="navbar">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item"><a class="nav-link active" href="/index/">Home</a></li>
+        <div class="collapse navbar-collapse" id="my-nav">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/index/">Home</a></li>
           </ul>
-          <ul class="navbar-nav navbar-right">
+          <ul class="nav navbar-nav navbar-right">
             {% if request.session.is_login %}
-                  <!-- <li><a class="nav-link" href="#">Current User : {{ request.session.user_name }}</a></li> -->
-                  <li><a class="nav-link" href="#">{{ request.session.user_name }}</a></li> 
-                  <li><a class="nav-link" href="/user/logout/">logout</a></li>
+                  <li><a href="#">Current User：{{ request.session.user_name }}</a></li>
+                  <li><a href="/user/logout/">log out</a></li>
               {% else %}
-                  <li><a class="nav-link" href="/user/login/">Login</a></li>
-                  <li><a class="nav-link" href="/user/register/">Register</a></li>
+                  <li><a href="/user/login/">Login</a></li>
+                  <li><a href="/user/register/">Register</a></li>
               {% endif %}
           </ul>
         </div><!-- /.navbar-collapse -->
