@@ -28,18 +28,19 @@ def study(request, label):
         client = pymongo.MongoClient('localhost', 27017)
         db = client['Django']
         col = db['urls']
-        item = col.find_one({'label': str(label)})
+        print('label :{} {}'.format(label,type(label)))
+        item = col.find_one({'label': label})
         if item is None:
             print('no item!')
             message = "Sorry,we are unable to find one now, come back later!"
             messages.error(request, message)
             return render(request, 'index.html', {})
         else:
-            new_url = '/reco/study/' + str(label) + '/' + str(item['url_id']) + '/'
-            return redirect(new_url)
+            new_url = '/reco/study/' + label + '/' + item['url_id'] + '/'
+            return redirect(new_url, {'prev': None})
 
 
-def studyone(request, label, url_id):
+def studyone(request, label, url_id, prev=None):
     if not request.session.get('is_login', None):
         message = 'please login first!'
         messages.error(request, message)
@@ -55,7 +56,7 @@ def studyone(request, label, url_id):
             messages.error(request, message)
             return redirect('/index/')
         else:
-            nitem = {'title': item['title'],
+            current_item = {'title': item['title'],
                      'url': item['url'],
                      'url_id': item['url_id'],
                      'type_tag': url_type[item['type']],
@@ -63,7 +64,25 @@ def studyone(request, label, url_id):
                      'label_tag': label_type[item['label']],
                      'label': item['label'],
                      'site_type': site_type[item['site_type']]}
-            return render(request, 'study/study.html', {'items': [nitem]})
+            # pick next lists
+            next_col = db['reco']
+            nexts = next_col.find({'prev': url_id}).limit(5).sort('value', pymongo.DESCENDING)
+            nextlist = []
+            for n in nexts:
+                next_url = n['next']
+                next_item = col.find_one({'url_id': next_url})
+                if next_item is not None:
+                    nitem = next_item
+                    nitem['value'] = n['value']
+                    nitem['type_tag'] = url_type[nitem['type']]
+                    nitem['label_tag'] = label_type[nitem['label']]
+                    nitem['site_tag'] = site_type[nitem['site_type']]
+                    nextlist.append(nitem)
+            prev = request.GET.get('prev')
+            print('prev', prev)
+            return render(request, 'study/study.html', {'items': [current_item],
+                                                        'nexts':nextlist,
+                                                        'prev': prev})
 
 
 def studynext(request):
@@ -77,8 +96,7 @@ def studynext(request):
             url_label = request.GET.get('url_label')
             client = pymongo.MongoClient('localhost', 27017)
             db = client['Django']
-            col = db['reco']
-            item = col.find({'prev': url_id}).sort('value', pymongo.DESCENDING).limit(1)
+
 
             if item is not None:
                 item = item[0]
@@ -96,12 +114,11 @@ def studynext(request):
                          'label': item['label'],
                          'site_type': site_type[item['site_type']]}
                 itemlist.append(nitem)
-                return render(request, 'study/study.html', {'items': itemlist})
+                return render(request, 'study/study.html', {'items': itemlist,'prev':url_id})
             else:
                 message = "Sorry,we are unable to find one now, come back later!"
                 messages.error(request, message)
-                return redirect('/reco/study/{}/{}'.format(url_label,url_id))
-
+                return redirect('/reco/study/{}/{}'.format(url_label, url_id))
 
 
 def show_bookmark(request):
@@ -126,6 +143,7 @@ def show_bookmark(request):
                          'label_tag': label_type[obj['label']]
                          }
                 itemlist.append(nitem)
+
         return render(request, 'bookmark/bookmark.html', {'items': itemlist})
 
 
@@ -140,10 +158,12 @@ def add_bookmark(request):
             url_title = request.POST.get('url_title')
             url_id = request.POST.get('url_id')
             url_label = request.POST.get('url_label')
+            prev = request.POST.get('prev')
             client = pymongo.MongoClient('localhost', 27017)
             print(user_name, '  ', url_id, ' ', url_title)
             db = client['Django']
             col = db['bookmark']
+            reco = db['reco']
             item = col.find_one({'url_id': url_id,
                                  'title': url_title,
                                  'user_id': user_name})
@@ -152,11 +172,23 @@ def add_bookmark(request):
                 col.insert({'title': url_title, 'url_id': url_id, 'user_id': user_name, 'time': datetime.now()})
                 message = 'Bookmark add successfully!'
                 messages.success(request, message)
+                if prev is not None:
+                    print('find pair: {} -> {}'.format(prev,url_id))
+                    pair = reco.find_one({'prev': prev, 'next':url_id})
+                    if pair is None:
+                        reco.insert({'prev': prev,
+                                     'next': url_id,
+                                     'value': '1'})
+                        print('new')
+                    else:
+                        new_value = str(int(pair['value'])+1)
+                        print('plus :',new_value)
+                        reco.update({'prev':prev,'next': url_id},{'$set':{'value':new_value}})
             else:
                 print('exist one')
                 message = 'This has already in your book mark!'
                 messages.error(request, message)
-            return redirect('/reco/study/' + url_label + '/' + url_id + '/', message=message)
+            return redirect('/reco/study/' + url_label + '/' + url_id + '/', {'prev': prev}, message=message)
         else:
             message = 'Invalid request!'
             return redirect('/index/', message=message)

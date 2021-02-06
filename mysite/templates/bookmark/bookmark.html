@@ -10,6 +10,11 @@
         <div class="row clearfix">
             <h2 class="text-center">Bookmarks</h2>
             <div class="col-md-12 column">
+                {% if not items%}
+                    <h5>
+                        No bookmark in your list  =.=
+                    </h5>
+                {% endif%}
                 {% for item in items %}
                 <div class="row clearfix">
                     <div class="col-md-2 column">
